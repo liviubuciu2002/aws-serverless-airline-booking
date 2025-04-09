@@ -9,7 +9,7 @@ type Flight
     # @auth(rules:[
     #     {allow: private, operations: [read]}
     # ])
-    @key(name: "ByDepartureSchedule", 
+    @index(name: "ByDepartureSchedule", 
         fields: ["departureAirportCode", "arrivalAirportCode", "departureDate"],
         queryField: "getFlightBySchedule")
 {
@@ -40,13 +40,13 @@ type Booking
       {allow: owner, ownerField: "customer", identityField: "sub", operations: [read]},
       {allow: groups, groups: ["Admin"]}
     ])
-    @key(name: "ByCustomerStatus", 
+    @index(name: "ByCustomerStatus", 
         fields: ["customer", "status"],
         queryField: "getBookingByStatus")
 {
     id: ID!
     status: BookingStatus!
-    outboundFlight: Flight! @connection
+    outboundFlight: Flight! @hasMany
     paymentToken: String!
     checkedIn: Boolean
     customer: String
