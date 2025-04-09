@@ -46,7 +46,7 @@ type Booking
 {
     id: ID!
     status: BookingStatus!
-    outboundFlight: Flight! @hasMany
+    outboundFlight: Flight! @hasOne(fields: ["outboundFlightId"])
     paymentToken: String!
     checkedIn: Boolean
     customer: String
