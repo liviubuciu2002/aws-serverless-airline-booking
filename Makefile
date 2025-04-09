@@ -79,7 +79,11 @@ export.parameter:
 
 _install_os_packages:
 	$(info [*] Installing jq...)
-	yum install jq -y
+	#yum install jq -y
+	mkdir -p ./bin
+	curl -Lo ./bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+	chmod +x ./bin/jq
+	export PATH=$PATH:$(pwd)/bin 
 	$(info [*] Upgrading Python SAM CLI and CloudFormation linter to the latest version...)
 	python3 -m pip install --upgrade --user cfn-lint aws-sam-cli
 	npm -g install aws-cdk
