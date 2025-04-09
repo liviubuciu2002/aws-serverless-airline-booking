@@ -1,6 +1,6 @@
 projects:
   awsserverlessairline:
-    schemaPath: amplify/backend/api/awsserverlessairline/build/schema.graphql
+    schemaPath: amplify/backend/api/awsserverlessairline/schema.graphql
     includes:
       - src/frontend/graphql/**/*.js
     excludes:
