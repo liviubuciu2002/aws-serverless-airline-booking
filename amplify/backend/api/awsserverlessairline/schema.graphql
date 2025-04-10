@@ -9,13 +9,13 @@ type Flight
     # @auth(rules:[
     #     {allow: private, operations: [read]}
     # ])
-    @index(name: "ByDepartureSchedule", 
-        sortKeyFields: ["departureAirportCode", "arrivalAirportCode", "departureDate"],
-        queryField: "getFlightBySchedule")
 {
     id: ID!
     departureDate: String!
-    departureAirportCode: String!
+    departureAirportCode: String! @index(name: "ByDepartureSchedule", 
+        sortKeyFields: ["arrivalAirportCode", "departureDate"],
+        queryField: "getFlightBySchedule")
+
     departureAirportName: String!
     departureCity: String!
     departureLocale: String!
@@ -40,16 +40,16 @@ type Booking
       {allow: owner, ownerField: "customer", identityField: "sub", operations: [read]},
       {allow: groups, groups: ["Admin"]}
     ])
-    @index(name: "ByCustomerStatus", 
-        sortKeyFields: ["customer", "status"],
-        queryField: "getBookingByStatus")
 {
     id: ID!
     status: BookingStatus!
     outboundFlight: Flight! @hasMany
     paymentToken: String!
     checkedIn: Boolean
-    customer: String
+    customer: String @index(name: "ByCustomerStatus", 
+        sortKeyFields: ["status"],
+        queryField: "getBookingByStatus")
+
     createdAt: String
     bookingReference: String
 }
