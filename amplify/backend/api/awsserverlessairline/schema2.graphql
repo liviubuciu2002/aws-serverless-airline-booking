@@ -1,0 +1,103 @@
+type Flight 
+    @model(subscriptions: null)
+    @auth(rules: [
+        {allow: private, operations: [read]},
+        {allow: groups, groups: ["Admin"], operations: [read, create, update, delete]}
+    ])
+    @index(
+        name: "ByDepartureSchedule", 
+        fields: ["departureAirportCode", "arrivalAirportCode", "departureDate"],
+        queryField: "getFlightBySchedule"
+    ) {
+    id: ID!
+    departureDate: AWSDate!
+    departureTime: AWSTime!
+    departureAirportCode: String!
+    departureAirportName: String!
+    departureCity: String!
+    departureLocale: String!
+    arrivalDate: AWSDate!
+    arrivalTime: AWSTime!
+    arrivalAirportCode: String!
+    arrivalAirportName: String!
+    arrivalCity: String!
+    arrivalLocale: String!
+    ticketPrice: Int!
+    ticketCurrency: String!
+    flightNumber: String!
+    seatCapacity: Int!
+    # Removed deprecated seatAllocation
+}
+
+type Booking 
+    @model(subscriptions: null) 
+    @auth(rules: [
+        {allow: owner, ownerField: "customerEmail", identityClaim: "email", operations: [create, read, update]},
+        {allow: groups, groups: ["Admin"], operations: [read, update, delete]}
+    ])
+    @index(
+        name: "ByCustomerStatus", 
+        fields: ["customerEmail", "status"],
+        queryField: "getBookingByStatus"
+    ) {
+    id: ID!
+    status: BookingStatus!
+    outboundFlight: Flight @hasOne(fields: ["outboundFlightId"])
+    outboundFlightId: ID!
+    paymentToken: String! @auth(rules: [{allow: owner}, {allow: groups, groups: ["Admin"]}])
+    checkedIn: Boolean
+    customerEmail: String @index(name: "byCustomer", queryField: "getBookingsByCustomer")
+    createdAt: AWSDateTime!
+    bookingReference: String! @unique
+}
+
+enum BookingStatus {
+    UNCONFIRMED
+    CONFIRMED
+    CANCELLED
+}
+
+type Loyalty 
+    @model
+    @auth(rules: [
+        {allow: owner, ownerField: "customerEmail", identityClaim: "email"},
+        {allow: groups, groups: ["Admin"]},
+        {allow: private, provider: apiKey, operations: [read]} # For backend access
+    ]) {
+    id: ID!
+    points: Int!
+    level: LoyaltyLevel!
+    customerEmail: String! @index(name: "byCustomer", queryField: "getLoyaltyByCustomer")
+    remainingPoints: Int!
+}
+
+enum LoyaltyLevel {
+    BRONZE
+    SILVER
+    GOLD
+    PLATINUM
+}
+
+type Mutation {
+    processBooking(input: CreateBookingInput!): Booking
+        @function(name: "processBooking-${env}")
+        @auth(rules: [
+            {allow: private},
+            {allow: groups, groups: ["Admin"]}
+        ])
+}
+
+type Query {
+    getLoyalty(customerEmail: String!): Loyalty
+        @auth(rules: [
+            {allow: owner, ownerField: "customerEmail", identityClaim: "email"},
+            {allow: groups, groups: ["Admin"]}
+        ])
+}
+
+input CreateBookingInput {
+    status: BookingStatus = UNCONFIRMED
+    paymentToken: String!
+    outboundFlightId: ID!
+    customerEmail: String!
+}

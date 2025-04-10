@@ -18,7 +18,17 @@ init: ##=> Install OS deps and dev tools
 	$(info [*] Bootstrapping CI system...)
 	@$(MAKE) _install_os_packages
 
+delete: ##=> Delete services
+	@echo "from makefile , before delete"
+	$(MAKE) delete.booking
+	$(MAKE) delete.payment
+	$(MAKE) delete.loyalty
+	$(MAKE) delete.shared-lambda-layers
+## Enable the delete.perftest if you need to delete the performance test stack
+#	$(MAKE) delete.perftest
+
 deploy: ##=> Deploy services
+	@echo "from makefile , before deploy"
 	$(info [*] Deploying...)
 	$(MAKE) deploy.shared-lambda-layers
 	$(MAKE) deploy.payment
@@ -27,13 +37,6 @@ deploy: ##=> Deploy services
 ## Enable the deploy.perftest if you need to deploy the performance test stack
 #	$(MAKE) deploy.perftest 
 
-delete: ##=> Delete services
-	$(MAKE) delete.booking
-	$(MAKE) delete.payment
-	$(MAKE) delete.loyalty
-	$(MAKE) delete.shared-lambda-layers
-## Enable the delete.perftest if you need to delete the performance test stack
-#	$(MAKE) delete.perftest
 
 delete.booking: ##=> Delete booking service
 	$(MAKE) -C src/backend/booking delete
