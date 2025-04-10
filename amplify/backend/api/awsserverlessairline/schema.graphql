@@ -10,7 +10,7 @@ type Flight
     #     {allow: private, operations: [read]}
     # ])
     @index(name: "ByDepartureSchedule", 
-        fields: ["departureAirportCode", "arrivalAirportCode", "departureDate"],
+        sortKeyFields: ["departureAirportCode", "arrivalAirportCode", "departureDate"],
         queryField: "getFlightBySchedule")
 {
     id: ID!
@@ -41,12 +41,12 @@ type Booking
       {allow: groups, groups: ["Admin"]}
     ])
     @index(name: "ByCustomerStatus", 
-        fields: ["customer", "status"],
+        sortKeyFields: ["customer", "status"],
         queryField: "getBookingByStatus")
 {
     id: ID!
     status: BookingStatus!
-    outboundFlight: Flight! @hasOne(fields: ["outboundFlightId"])
+    outboundFlight: Flight! @hasMany
     paymentToken: String!
     checkedIn: Boolean
     customer: String
