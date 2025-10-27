@@ -16,28 +16,48 @@ backend:
         ##
         # Extract Environment data
         ##
+        - echo "11"
         - export STACK_NAME=$(jq -r '.providers.awscloudformation.StackName' ./amplify/#current-cloud-backend/amplify-meta.json)
+        - echo "22"
         - export DEPLOYMENT_BUCKET_NAME=$(jq -r '.providers.awscloudformation.DeploymentBucketName' ./amplify/#current-cloud-backend/amplify-meta.json)
+        - echo "33"
         - export AWS_DEFAULT_REGION=$(jq -r '.providers.awscloudformation.Region' amplify/#current-cloud-backend/amplify-meta.json)
+        - echo "44"
         - export GRAPHQL_API_ID=$(jq -r '.api[(.api | keys)[0]].output.GraphQLAPIIdOutput' ./amplify/#current-cloud-backend/amplify-meta.json)
+        - echo "55"
         - export APPSYNC_URL=$(jq -r '.api[(.api | keys)[0]].output.GraphQLAPIEndpointOutput' ./amplify/#current-cloud-backend/amplify-meta.json)
+        - echo "66"
         - export COGNITO_USER_POOL_ID=$(jq -r '.auth[(.auth | keys)[0]].output.UserPoolId' ./amplify/#current-cloud-backend/amplify-meta.json)
+        - echo "77"
         - export COGNITO_USER_POOL_ARN=$(aws cognito-idp describe-user-pool --user-pool-id ${COGNITO_USER_POOL_ID} --query 'UserPool.Arn' --output text)
+        - echo "88"
         - export COGNITO_USER_POOL_CLIENT_ID=$(jq -r '.auth[(.auth | keys)[0]].output.AppClientIDWeb' ./amplify/#current-cloud-backend/amplify-meta.json)
+        - echo "99"
         - export FLIGHT_TABLE_NAME=$(aws appsync list-data-sources --api-id ${GRAPHQL_API_ID} --query "dataSources[?name=='FlightTable'].dynamodbConfig.tableName" --output text)
+        - echo "1010"
         - export BOOKING_TABLE_NAME=$(aws appsync list-data-sources --api-id ${GRAPHQL_API_ID} --query "dataSources[?name=='BookingTable'].dynamodbConfig.tableName" --output text)
+        - echo "1111"
         - export STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-UNDEFINED}
+        - echo "1212"
         - export STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY:-UNDEFINED}
         ##
         # Export key deployed resources to System Manager Parameter Store
         ##
+        - echo "1313" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/deployment/stackName" VALUE=${STACK_NAME} &
+        - echo "1414" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/deployment/deploymentBucket" VALUE=${DEPLOYMENT_BUCKET_NAME} &
+        - echo "1515" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/auth/userpool/id" VALUE=${COGNITO_USER_POOL_ID} &
+        - echo "1616" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/auth/userpool/arn" VALUE=${COGNITO_USER_POOL_ARN} &
+        - echo "1717" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/auth/userpool/clientId" VALUE=${COGNITO_USER_POOL_CLIENT_ID} &
+        - echo "1818" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/api/id" VALUE=${GRAPHQL_API_ID} &
+        - echo "1919" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/api/url" VALUE=${APPSYNC_URL} &
+        - echo "2020" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/storage/table/flight" VALUE=${FLIGHT_TABLE_NAME} &
         - make export.parameter NAME="/${AWS_BRANCH}/service/amplify/storage/table/booking" VALUE=${BOOKING_TABLE_NAME} &
         - make export.parameter NAME="/${AWS_BRANCH}/service/payment/stripe/secretKey" VALUE=${STRIPE_SECRET_KEY} &
@@ -45,6 +65,7 @@ backend:
         - make export.parameter NAME="/${AWS_BRANCH}/service/auth/userpool/url" VALUE=https://cognito-idp.${AWS_DEFAULT_REGION}.amazonaws.com/  &
         - make export.parameter NAME="/${AWS_BRANCH}/service/loadtest/usercount" VALUE=5 &
         - make export.parameter NAME="/${AWS_BRANCH}/service/loadtest/csv/token" VALUE=user-with-token.csv &
+        - echo "2121" &
         - make export.parameter NAME="/${AWS_BRANCH}/service/loadtest/csv/user" VALUE=user.csv &
         - wait
         ##
